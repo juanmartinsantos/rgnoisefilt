@@ -20,4 +20,6 @@ devtools::install_github("juanmartinsantos/rgnoisefilt/pkg/rgnoisefilt")
 ## Documentation:
 Detailed documentation can be found [here](https://cran.r-project.org/web/packages/rgnoisefilt/vignettes/rgnoisefilt.html)
 
-
+## Cite:
+If you use rgnoisefilt please cite: 
+[Martin J. and Sáez J.A. and Corchado E. (2024). Tackling the problem of noisy IoT sensor data in smart agriculture: Regression noise filters for enhanced evapotranspiration prediction. Expert Systems with Applications, 237(Part B), 121608.](https://doi.org/10.1016/j.eswa.2023.121608)
