@@ -22,4 +22,4 @@ Detailed documentation can be found [here](https://cran.r-project.org/web/packag
 
 ## Cite:
 If you use <i>rgnoisefilt</i> please cite: 
-[Martín J. and Sáez J.A. and Corchado E. (2024). Tackling the problem of noisy IoT sensor data in smart agriculture: Regression noise filters for enhanced evapotranspiration prediction. Expert Systems with Applications, 237(Part B), 121608.](https://doi.org/10.1016/j.eswa.2023.121608)
+<br>[Martín J. and Sáez J.A. and Corchado E. (2024). Tackling the problem of noisy IoT sensor data in smart agriculture: Regression noise filters for enhanced evapotranspiration prediction. Expert Systems with Applications, 237(Part B), 121608.](https://doi.org/10.1016/j.eswa.2023.121608)
