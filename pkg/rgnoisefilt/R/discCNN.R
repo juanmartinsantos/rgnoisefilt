@@ -72,7 +72,6 @@ NULL
 ###############################################################
 #' @rdname discCNN
 #' @export
-#' @importFrom "UBL" "CNNClassif"
 #' @importFrom "entropy" "entropy"
 #' @importFrom "arules" "discretize"
 discCNN.default <- function(x, y, ...){
@@ -102,15 +101,16 @@ discCNN.default <- function(x, y, ...){
   
   disc <- arules::discretize(x = as.matrix(dataset[,ncol(dataset)]), method = "interval", breaks = B)
   newdata <- data.frame(x, target = factor(disc))
+  sorted_levels <- sort(levels(newdata$target))
+  newdata$target <- factor(newdata$target, levels = sorted_levels, labels = 1:length(sorted_levels))
   formu <- as.formula(paste0(colnames(newdata)[ncol(newdata)], "~."))
   
-  result_filter <- UBL::CNNClassif(form = formu, dat = newdata)
-  result_filter <- result_filter[[1]]
+  result_filter <- cnn_classifier(data = newdata, formula_input = formu)
   
   # ------------------------------------ #
   # --- Building the 'filter' object --- #
   # ------------------------------------ #
-  idclean <- sort(as.numeric(rownames(result_filter)))
+  idclean <- setdiff(1:nrow(original.data), result_filter)
   numclean <- length(idclean)
   xclean <- original.data[idclean,-ncol(original.data)]
   yclean <- original.data[idclean,ncol(original.data)]
@@ -167,3 +167,46 @@ discCNN.formula <- function(formula, data, ...){
 ###############################################################
 ###############################################################
 ###############################################################
+cnn_classifier <- function(data, formula_input) {
+  initial_diff <- which(data[, ncol(data)] != data[1, ncol(data)])[1]
+  main_set <- c(1, initial_diff)
+  auxiliary_set <- setdiff(1:initial_diff, main_set)
+  
+  for(row in (initial_diff + 1):nrow(data)) {
+    prediction <- kknn::kknn(
+      formula = formula_input,
+      train = data[main_set,],
+      test = data[row,], 
+      k = 1,
+      kernel = "rectangular"
+    )$fitted.values
+    
+    if (prediction == data[row, ncol(data)]) {
+      auxiliary_set <- c(auxiliary_set, row)
+    } else {
+      main_set <- c(main_set, row)
+    }
+  }
+  
+  should_continue <- TRUE
+  while(should_continue) {
+    should_continue <- FALSE
+    for(index in auxiliary_set) {
+      prediction <- kknn::kknn(
+        formula = formula_input,
+        train = data[main_set,],
+        test = data[index,], 
+        k = 1,
+        kernel = "rectangular"
+      )$fitted.values
+      
+      if (prediction != data[index, ncol(data)]) {
+        main_set <- c(main_set, index)
+        auxiliary_set <- setdiff(auxiliary_set, index)
+        should_continue <- TRUE
+      }
+    }
+  }
+  return(auxiliary_set)
+}
+

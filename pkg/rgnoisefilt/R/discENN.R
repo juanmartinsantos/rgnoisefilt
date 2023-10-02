@@ -74,7 +74,7 @@ NULL
 #' @export
 #' @importFrom "entropy" "entropy"
 #' @importFrom "arules" "discretize"
-#' @importFrom "UBL" "ENNClassif"
+#' @importFrom "kknn" "kknn"
 #' 
 discENN.default <- function(x, y, k=5, ...){
 
@@ -106,15 +106,18 @@ discENN.default <- function(x, y, k=5, ...){
   
   disc <- arules::discretize(x = as.matrix(dataset[,ncol(dataset)]), method = "interval", breaks = B)
   newdata <- data.frame(x, target = factor(disc))
+  
+  sorted_levels <- sort(levels(newdata$target))
+  newdata$target <- factor(newdata$target, levels = sorted_levels, labels = 1:length(sorted_levels))
   formu <- as.formula(paste0(colnames(newdata)[ncol(newdata)], "~."))
   
-  result_filter <- ENNClassif(form = formu, dat = newdata, k = k)
-  result_filter <- result_filter[[1]]
+  result_filter <- perform_kknn(x = newdata, formu = formu, k = k)
+  result_filter <- which(result_filter!=newdata[,ncol(newdata)])
   
   # ------------------------------------ #
   # --- Building the 'filter' object --- #
   # ------------------------------------ #
-  idclean <- sort(as.numeric(rownames(result_filter)))
+  idclean <- setdiff(1:nrow(original.data), result_filter)
   numclean <- length(idclean)
   xclean <- original.data[idclean,-ncol(original.data)]
   yclean <- original.data[idclean,ncol(original.data)]

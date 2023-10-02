@@ -1,3 +1,5 @@
+###############################################################
+###############################################################
 normalizeData2 <- function(data){
   features <- apply(data, MARGIN = 2,
                     FUN = function(x){
@@ -8,6 +10,8 @@ normalizeData2 <- function(data){
   return(data_aux)
 }
 
+###############################################################
+###############################################################
 forecast <- function(prediccion, real, NS){
   forest <- logical(length(prediccion))
   dif <- abs(prediccion-real)
@@ -17,6 +21,8 @@ forecast <- function(prediccion, real, NS){
   return(forest)
 }
 
+###############################################################
+###############################################################
 sort_DROP2RT <- function(data, D = 0.1) {
   Y <- data[,ncol(data)]
   num_instances <- length(Y)
@@ -48,6 +54,8 @@ sort_DROP2RT <- function(data, D = 0.1) {
   return(sorted_data)
 }
 
+###############################################################
+###############################################################
 normalKFCV <- function(data_, k_){
   
   part_aux <- crossv_kfold(data = data_, k = k_)
@@ -64,4 +72,14 @@ normalKFCV <- function(data_, k_){
     }
   }
   return(part)
+}
+
+###############################################################
+###############################################################
+perform_kknn <- function(x, formu, k) {
+  prediction <- sapply(1:nrow(x),function(i){
+    kknn::kknn(formula = formu, train = x[-i,], test = x[i,], k = k,
+               kernel = "rectangular")$fitted.values
+  })
+  return(prediction)
 }

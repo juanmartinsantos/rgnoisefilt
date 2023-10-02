@@ -75,7 +75,7 @@ NULL
 #' @export
 #' @importFrom "entropy" "entropy"
 #' @importFrom "arules" "discretize"
-#' @importFrom "UBL" "NCLClassif"
+#' @importFrom "class" "knn"
 #' 
 discNCL.default <- function(x, y, k=3, ...){
 
@@ -107,14 +107,16 @@ discNCL.default <- function(x, y, k=3, ...){
   
   disc <- arules::discretize(x = as.matrix(dataset[,ncol(dataset)]), method = "interval", breaks = B)
   newdata <- data.frame(x, target = factor(disc))
+  sorted_levels <- sort(levels(newdata$target))
+  newdata$target <- factor(newdata$target, levels = sorted_levels, labels = 1:length(sorted_levels))
   formu <- as.formula(paste0(colnames(newdata)[ncol(newdata)], "~."))
   
-  result_filter <- NCLClassif(form = formu, dat = newdata, k = k)
+  result_filter <- neighborhood_cleaning_rule(data = newdata, formula = formu, k = k)
   
   # ------------------------------------ #
   # --- Building the 'filter' object --- #
   # ------------------------------------ #
-  idclean <- sort(as.numeric(rownames(result_filter)))
+  idclean <- setdiff(1:nrow(original.data), result_filter)
   numclean <- length(idclean)
   xclean <- original.data[idclean,-ncol(original.data)]
   yclean <- original.data[idclean,ncol(original.data)]
@@ -171,3 +173,42 @@ discNCL.formula <- function(formula, data, ...){
 ###############################################################
 ###############################################################
 ###############################################################
+neighborhood_cleaning_rule <- function(data, formula, k) {
+  
+  target_col <- which(names(data) == as.character(formula[[2]]))
+  
+  classes <- levels(data[, target_col])
+  num_classes <- length(classes)
+  
+  Cl <- names(which.min(table(data[, target_col])))
+  other_classes <- setdiff(classes, Cl)
+  
+  if (length(other_classes) > 1) {
+    cleaned_data <- perform_kknn(data[which(data[, target_col] %in% other_classes), ], formula, k)
+  } else {
+    cleaned_data <- list(data[which(data[, target_col] %in% other_classes), ], c())
+  }
+  
+  relevant_data <- subset(data, data[, target_col] %in% Cl)
+  
+  neighbors <- knn(train = data, test = data, cl = data[, target_col], k = k)
+  
+  min_class_value <- min(sapply(Cl, function(x) length(which(data[, target_col] == x))))
+  potential_min_value <- 0.5 * min_class_value
+  classes_to_remove <- names(which(sapply(other_classes, function(x) length(which(data[, target_col] == x)) > potential_min_value)))
+  
+  removal_indices <- c()
+  for (current_class in Cl) {
+    class_indices <- which(data[, target_col] == current_class)
+    for (i in class_indices) {
+      if (sum(neighbors == current_class) == k) {
+        removal_indices <- c(removal_indices, which(neighbors == current_class))
+      }
+    }
+  }
+  
+  removal_indices <- unique(removal_indices)
+  
+  return(removal_indices)
+}
+

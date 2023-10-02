@@ -21,3 +21,7 @@
 # rgnoisefilt 1.1.1
 
 * Minor modifications.
+
+# rgnoisefilt 1.1.2
+
+* Minor modifications. Some functions have been added to remove dependencies.

@@ -73,7 +73,6 @@ NULL
 #' @export
 #' @importFrom "entropy" "entropy"
 #' @importFrom "arules" "discretize"
-#' @importFrom "UBL" "TomekClassif"
 #' 
 discTL.default <- function(x, y, ...){
 
@@ -102,15 +101,22 @@ discTL.default <- function(x, y, ...){
   
   disc <- arules::discretize(x = as.matrix(dataset[,ncol(dataset)]), method = "interval", breaks = B)
   newdata <- data.frame(x, target = factor(disc))
-  formu <- as.formula(paste0(colnames(newdata)[ncol(newdata)], "~."))
+  sorted_levels <- sort(levels(newdata$target))
+  newdata$target <- factor(newdata$target, levels = sorted_levels, labels = 1:length(sorted_levels))
   
-  result_filter <- TomekClassif(form = formu, dat = newdata, dist = "Euclidean", Cl = "all", rem = "both")
-  result_filter <- result_filter[[1]]
+  # Fix data for Tome link  
+  attr_data <- newdata[, -ncol(newdata)]
+  attr_data_matrix <- as.matrix(attr_data)
+  class1_indices <- which(newdata[, ncol(newdata)] == levels(newdata[, ncol(newdata)])[1])
+  class2_indices <- which(newdata[, ncol(newdata)] == levels(newdata[, ncol(newdata)])[2])
+  
+  result_filter <- compute_tomek_matrix(attr_data_matrix = attr_data_matrix, class1_indices = class1_indices, class2_indices = class2_indices)
+  result_filter <- c(class1_indices[colSums(result_filter)>0],class2_indices[rowSums(result_filter)>0])
   
   # ------------------------------------ #
   # --- Building the 'filter' object --- #
   # ------------------------------------ #
-  idclean <- sort(as.numeric(rownames(result_filter)))
+  idclean <- setdiff(1:nrow(original.data), result_filter)
   numclean <- length(idclean)
   xclean <- original.data[idclean,-ncol(original.data)]
   yclean <- original.data[idclean,ncol(original.data)]
@@ -167,3 +173,32 @@ discTL.formula <- function(formula, data, ...){
 ###############################################################
 ###############################################################
 ###############################################################
+compute_tomek_matrix <- function(attr_data_matrix, class1_indices, class2_indices) {
+  
+  tomek_links_matrix <- sapply(class1_indices, function(i) {
+    sapply(class2_indices, function(j) {
+      
+      midpoint <- (attr_data_matrix[i, ] + attr_data_matrix[j, ]) / 2
+      
+      distances_to_midpoint_class1 <- apply(attr_data_matrix[setdiff(class1_indices, i), ], 1, function(v) {
+        sum(abs(v - midpoint))
+      })
+      
+      if (any(distances_to_midpoint_class1 <= sum(abs(attr_data_matrix[i, ] - midpoint)))) {
+        return(FALSE)
+      }
+      
+      distances_to_midpoint_class2 <- apply(attr_data_matrix[setdiff(class2_indices, j), ], 1, function(v) {
+        sum(abs(v - midpoint))
+      })
+      
+      if (any(distances_to_midpoint_class2 <= sum(abs(attr_data_matrix[j, ] - midpoint)))) {
+        return(FALSE)
+      }
+      return(TRUE)
+    })
+  })
+  
+  return(tomek_links_matrix)
+}
+
