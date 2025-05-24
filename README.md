@@ -3,7 +3,6 @@
 [![total_downloads](http://cranlogs.r-pkg.org/badges/grand-total/rgnoisefilt?color=green)](https://cran.r-project.org/package=rgnoisefilt)
 [![Downloads](https://cranlogs.r-pkg.org/badges/rgnoisefilt)](https://cran.r-project.org/package=rgnoisefilt) 
 [![Coverage Status](https://img.shields.io/badge/Coverage%20Status-93.23-orange)](http://cran.r-project.org/web/packages/rgnoisefilt)
-[![CRAN_checks](https://badges.cranchecks.info/summary/badger.svg)]([https://cran.r-project.org/web/checks/check_results_badger.html](http://cran.r-project.org/web/packages/rgnoisefilt))
  <!-- to hide-->
 # rgnoisefilt
 <p style="text-align:justify;"> The <strong>rgnoisefilt</strong> package adapts classic and recent filtering techniques for use in regression problems, and it also incorporates methods specifically designed for regression data (<a href="https://ieeexplore.ieee.org/document/9585469">Martin <i>et al.</i> 2021</a>, <a href="https://www.sciencedirect.com/science/article/pii/S095741741600049X">Arnaiz-Gonzalez <i>et al.</i> 2014</a>). </p>
