@@ -1,6 +1,6 @@
 <!--[![CRAN_Status_Badge](https://www.r-pkg.org/badges/version/rgnoisefilt)](http://cran.r-project.org/web/packages/rgnoisefilt)  -->
-[![](https://img.shields.io/badge/release%20version-1.1.3-green.svg)](https://cran.r-project.org/package=rgnoisefilt)
-[![](http://cranlogs.r-pkg.org/badges/grand-total/rgnoisefilt?color=green)](https://cran.r-project.org/package=rgnoisefilt)
+[![version](https://img.shields.io/badge/release%20version-1.1.3-green.svg)](https://cran.r-project.org/package=rgnoisefilt)
+[![total_downloads](http://cranlogs.r-pkg.org/badges/grand-total/rgnoisefilt?color=green)](https://cran.r-project.org/package=rgnoisefilt)
 [![Downloads](https://cranlogs.r-pkg.org/badges/rgnoisefilt)](https://cran.r-project.org/package=rgnoisefilt) 
 [![Coverage Status](https://img.shields.io/badge/Coverage%20Status-93.23-orange)](http://cran.r-project.org/web/packages/rgnoisefilt)
  <!-- to hide-->
