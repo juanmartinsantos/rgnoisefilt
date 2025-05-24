@@ -1,4 +1,5 @@
 <!--[![CRAN_Status_Badge](https://www.r-pkg.org/badges/version/rgnoisefilt)](http://cran.r-project.org/web/packages/rgnoisefilt)  -->
+[![](http://cranlogs.r-pkg.org/badges/grand-total/badger?color=green)](https://cran.r-project.org/package=badger)
 [![Downloads](https://cranlogs.r-pkg.org/badges/rgnoisefilt)](https://cran.r-project.org/package=rgnoisefilt) 
 [![Coverage Status](https://img.shields.io/badge/Coverage%20Status-93.23-orange)](http://cran.r-project.org/web/packages/rgnoisefilt)
  <!-- to hide-->
